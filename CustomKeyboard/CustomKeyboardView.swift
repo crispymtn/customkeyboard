@@ -10,13 +10,13 @@ import Foundation
 import UIKit
 
 @objc protocol CustomKeyboardDelegate: class {
-    optional func softKeyPressed(key: CustomKeyboardKey)
+    @objc optional func softKeyPressed(_ key: CustomKeyboardKey)
 }
 
 class CustomKeyboardView: UIView {
     weak var delegate: CustomKeyboardDelegate?
-    private var keyboardGroupViewsXConstraints: [NSLayoutConstraint] = []
-    private var keyboardGroupViews: [CustomKeyboardKeyGroup] = []
+    fileprivate var keyboardGroupViewsXConstraints: [NSLayoutConstraint] = []
+    fileprivate var keyboardGroupViews: [CustomKeyboardKeyGroup] = []
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -33,7 +33,7 @@ class CustomKeyboardView: UIView {
     }
     
     @IBAction
-    func softKeyPressed(sender: AnyObject?) {
+    func softKeyPressed(_ sender: AnyObject?) {
         guard let key = sender as? CustomKeyboardKey,
             let delegate = delegate else { return }
         
@@ -42,16 +42,16 @@ class CustomKeyboardView: UIView {
     
     // MARK: - Private
     
-    private var didSetup = false
-    private let innerView = UIStackView(frame: CGRectZero)
+    fileprivate var didSetup = false
+    fileprivate let innerView = UIStackView(frame: CGRect.zero)
     
-    private func setup() {
+    fileprivate func setup() {
         guard !didSetup else { return }
         
         backgroundColor = UIColor(hue: 0.61, saturation: 0.04, brightness: 0.86, alpha: 1.00)
-        innerView.backgroundColor = UIColor.clearColor()
-        innerView.alignment = .Leading
-        innerView.distribution = .EqualCentering
+        innerView.backgroundColor = UIColor.clear
+        innerView.alignment = .leading
+        innerView.distribution = .equalCentering
         innerView.spacing = 24.0
         innerView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(innerView)
@@ -59,22 +59,22 @@ class CustomKeyboardView: UIView {
         let outerMargin: CGFloat = 6.0
         
         // Setup inner view centering
-        addConstraint(NSLayoutConstraint(item: innerView, attribute: .CenterX, relatedBy: .Equal, toItem: self, attribute: .CenterX, multiplier: 1.0, constant: 0))
-        addConstraint(NSLayoutConstraint(item: innerView, attribute: .CenterY, relatedBy: .Equal, toItem: self, attribute: .CenterY, multiplier: 1.0, constant: -outerMargin))
+        addConstraint(NSLayoutConstraint(item: innerView, attribute: .centerX, relatedBy: .equal, toItem: self, attribute: .centerX, multiplier: 1.0, constant: 0))
+        addConstraint(NSLayoutConstraint(item: innerView, attribute: .centerY, relatedBy: .equal, toItem: self, attribute: .centerY, multiplier: 1.0, constant: -outerMargin))
         
         // Setup inner view minimum spacing
-        addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
-            "H:|-(>=outerMargin)-[innerView]-(>=outerMargin)-|", options: [], metrics: ["outerMargin": outerMargin],
+        addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "H:|-(>=outerMargin)-[innerView]-(>=outerMargin)-|", options: [], metrics: ["outerMargin": outerMargin],
             views: ["innerView": innerView]))
         
-        addConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
-            "V:|[innerView]-(>=outerMargin)-|", options: [], metrics: ["outerMargin": outerMargin],
+        addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: "V:|[innerView]-(>=outerMargin)-|", options: [], metrics: ["outerMargin": outerMargin],
             views: ["innerView": innerView]))
         
         didSetup = true
     }
     
-    func addKeyGroup(group: CustomKeyboardKeyGroup) {
+    func addKeyGroup(_ group: CustomKeyboardKeyGroup) {
         keyboardGroupViews.append(group)
         innerView.addArrangedSubview(group)
     }

@@ -9,26 +9,26 @@
 import Foundation
 import UIKit
 
-private let numberFormatter: NSNumberFormatter = {
-    let f = NSNumberFormatter()
+private let numberFormatter: NumberFormatter = {
+    let f = NumberFormatter()
     f.minimumFractionDigits = 0
     f.maximumFractionDigits = 3
     return f
 }()
 
-public class DecimalInputTextField: UITextField {
-    private var didSetup = false
-    private var _decimalInputView: UIView!
+open class DecimalInputTextField: UITextField {
+    fileprivate var didSetup = false
+    fileprivate var _decimalInputView: UIView!
     
-    @IBInspectable public var showsQuickBar = true {
+    @IBInspectable open var showsQuickBar = true {
         didSet { setupInputView() }
     }
     
-    private func setupInputView() {
+    fileprivate func setupInputView() {
         guard !didSetup else { return }
         
-        let inputView = CustomKeyboardView(frame: CGRectMake(0, 0, 183, 333))
-        inputView.autoresizingMask = [.None]
+        let inputView = CustomKeyboardView(frame: CGRect(x: 0, y: 0, width: 183, height: 333))
+        inputView.autoresizingMask = UIViewAutoresizing()
         let decimalButtonCaptions = "123456789 0⌫".characters.map { String($0) }.chunk(3)
         
         let decimalPad = CustomKeyboardKeyGroup(keyboard: inputView, captions:
@@ -50,10 +50,10 @@ public class DecimalInputTextField: UITextField {
                 quickAddButtonCaptions, applicator: { [weak self] (button) in
                     guard let weakSelf = self else { return }
                     
-                    let number = numberFormatter.numberFromString(weakSelf.text ?? "")?.doubleValue ?? 0
+                    let number = numberFormatter.number(from: weakSelf.text ?? "")?.doubleValue ?? 0
                     let buttonValue = Double(button.caption)!
-                    let newNumber = NSNumber(double:number + buttonValue)
-                    let newString = numberFormatter.stringFromNumber(newNumber)
+                    let newNumber = NSNumber(value: number + buttonValue as Double)
+                    let newString = numberFormatter.string(from: newNumber)
                     
                     weakSelf.text = newString
                 })
@@ -65,17 +65,17 @@ public class DecimalInputTextField: UITextField {
         didSetup = true
     }
     
-    override public var inputView: UIView? {
+    override open var inputView: UIView? {
         get { setupInputView(); return _decimalInputView }
         set { }
     }
 }
 
 private extension Array {
-    func chunk(size: Int = 1) -> [[Element]] {
+    func chunk(_ size: Int = 1) -> [[Element]] {
         var result = [[Element]]()
         var chunk = -1
-        for (index, element) in enumerate() {
+        for (index, element) in enumerated() {
             if index % size == 0 {
                 result.append([Element]())
                 chunk += 1

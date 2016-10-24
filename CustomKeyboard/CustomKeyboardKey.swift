@@ -15,11 +15,11 @@ class CustomKeyboardKey: UIButton {
 
     typealias Applicator = ((CustomKeyboardKey) -> (Void))
     
-    required init(caption: String, isDeleteButton: Bool, applicator: Applicator) {
+    required init(caption: String, isDeleteButton: Bool, applicator: @escaping Applicator) {
         self.caption = caption
         self.isDeleteButton = isDeleteButton
         self.applicator = applicator
-        super.init(frame: CGRectZero)
+        super.init(frame: CGRect.zero)
         setupDefaults()
     }
     
@@ -31,15 +31,15 @@ class CustomKeyboardKey: UIButton {
         fatalError("initWithCoder not implemented")
     }
     
-    private let shadowLayer = CAShapeLayer()
-    private let cornerRadius: CGFloat = 8.0
+    fileprivate let shadowLayer = CAShapeLayer()
+    fileprivate let cornerRadius: CGFloat = 8.0
     
-    private var normalBackgroundColor: CGColor!
-    private var highlightedBackgroundColor: CGColor!
+    fileprivate var normalBackgroundColor: CGColor!
+    fileprivate var highlightedBackgroundColor: CGColor!
     
-    override var highlighted: Bool {
+    override var isHighlighted: Bool {
         didSet {
-            if highlighted {
+            if isHighlighted {
                 layer.backgroundColor = highlightedBackgroundColor
             } else {
                 layer.backgroundColor = normalBackgroundColor
@@ -47,36 +47,36 @@ class CustomKeyboardKey: UIButton {
         }
     }
     
-    func touchUpInside(sender: CustomKeyboardKey?) {
+    func touchUpInside(_ sender: CustomKeyboardKey?) {
         applicator(self)
     }
     
-    private func setupDefaults() {
-        addTarget(self, action: #selector(CustomKeyboardKey.touchUpInside(_:)), forControlEvents: .TouchUpInside)
+    fileprivate func setupDefaults() {
+        addTarget(self, action: #selector(CustomKeyboardKey.touchUpInside(_:)), for: .touchUpInside)
         
-        let grayColor = UIColor(red: 0.68, green: 0.70, blue: 0.75, alpha: 1.00).CGColor
-        let whiteColor = UIColor(white: 1.00, alpha: 1.0).CGColor
+        let grayColor = UIColor(red: 0.68, green: 0.70, blue: 0.75, alpha: 1.00).cgColor
+        let whiteColor = UIColor(white: 1.00, alpha: 1.0).cgColor
         let isBlankKey = caption.trimmedString.isEmpty
         let shouldBeInverted = isDeleteButton || isBlankKey
         
         normalBackgroundColor = shouldBeInverted ? grayColor : whiteColor
         highlightedBackgroundColor = shouldBeInverted ? whiteColor : grayColor
         
-        enabled = !isBlankKey
+        isEnabled = !isBlankKey
         
         layer.backgroundColor = normalBackgroundColor
         
         if isDeleteButton {
-            titleLabel?.font = UIFont.systemFontOfSize(24.0, weight: UIFontWeightThin)
+            titleLabel?.font = UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin)
         } else {
-            titleLabel?.font = UIFont.systemFontOfSize(30.0, weight: UIFontWeightLight)
+            titleLabel?.font = UIFont.systemFont(ofSize: 30.0, weight: UIFontWeightLight)
         }
         
-        setTitleColor(UIColor.blackColor(), forState: .Normal)
-        setTitle(caption, forState: .Normal)
+        setTitleColor(UIColor.black, for: UIControlState())
+        setTitle(caption, for: UIControlState())
         
-        layer.shadowColor = UIColor(white: 0.55, alpha: 1.0).CGColor
-        layer.shadowOffset = CGSizeMake(0, 1)
+        layer.shadowColor = UIColor(white: 0.55, alpha: 1.0).cgColor
+        layer.shadowOffset = CGSize(width: 0, height: 1)
         layer.shadowRadius = 0.0
         layer.shadowOpacity = 1.0
         layer.masksToBounds = false
@@ -86,16 +86,16 @@ class CustomKeyboardKey: UIButton {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).CGPath
+        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
     }
     
-    override func intrinsicContentSize() -> CGSize {
-        return CGSizeMake(80, 74)
+    override var intrinsicContentSize : CGSize {
+        return CGSize(width: 80, height: 74)
     }
 }
 
 private extension String {
     var trimmedString: String {
-        return self.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+        return self.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
     }
 }
