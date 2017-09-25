@@ -47,7 +47,7 @@ class CustomKeyboardKey: UIButton {
         }
     }
     
-    func touchUpInside(_ sender: CustomKeyboardKey?) {
+    @objc func touchUpInside(_ sender: CustomKeyboardKey?) {
         applicator(self)
     }
     
@@ -67,9 +67,9 @@ class CustomKeyboardKey: UIButton {
         layer.backgroundColor = normalBackgroundColor
         
         if isDeleteButton {
-            titleLabel?.font = UIFont.systemFont(ofSize: 24.0, weight: UIFontWeightThin)
+            titleLabel?.font = UIFont.systemFont(ofSize: 24.0, weight: UIFont.Weight.thin)
         } else {
-            titleLabel?.font = UIFont.systemFont(ofSize: 30.0, weight: UIFontWeightLight)
+            titleLabel?.font = UIFont.systemFont(ofSize: 30.0, weight: UIFont.Weight.light)
         }
         
         setTitleColor(UIColor.black, for: UIControlState())
